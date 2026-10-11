@@ -1,0 +1,21 @@
+{
+  "id": "./",
+  "name": "Web Rider",
+  "short_name": "WebRider",
+  "description": "A neon motorcycle stunt game.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "landscape",
+  "theme_color": "#070a18",
+  "background_color": "#070a18",
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
