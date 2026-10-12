@@ -1,49 +1,329 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#070a18">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Web Rider">
-  <meta name="description" content="A neon motorcycle stunt game.">
-  <link rel="manifest" href="./manifest.json">
-  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="./icons/icon.svg">
-  <link rel="stylesheet" href="./css/style.css">
-  <title>Web Rider</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#070914">
+<title>Web Rider</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { width:100%; height:100%; margin:0; overflow:hidden; background:#070914; }
+  body { font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#fff; user-select:none; -webkit-user-select:none; }
+  canvas { display:block; width:100%; height:100%; touch-action:none; }
+  #hud { position:fixed; inset:0; pointer-events:none; }
+  #brand { position:absolute; top:18px; left:22px; font-size:clamp(17px,3vw,25px); font-weight:1000; font-style:italic; letter-spacing:.12em; text-shadow:0 0 14px #ff315c; }
+  #score { position:absolute; top:20px; left:50%; transform:translateX(-50%); text-align:center; font-size:clamp(24px,5vw,42px); line-height:1; font-weight:900; text-shadow:0 2px 14px #000; }
+  #score small { display:block; margin-top:6px; font-size:12px; letter-spacing:.18em; color:#b7bdd4; }
+  #gems { position:absolute; top:22px; right:22px; color:#d9a2ff; font-weight:800; font-size:18px; text-shadow:0 0 12px #a343ff; }
+  #message { position:absolute; top:23%; left:50%; transform:translate(-50%,-50%); color:#fff; font-weight:1000; font-size:clamp(20px,4vw,34px); font-style:italic; text-shadow:0 0 16px #00dfff; opacity:0; transition:opacity .15s; white-space:nowrap; }
+  #panel { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:20px; background:radial-gradient(ellipse at 50% 48%,rgba(20,29,69,.58),rgba(2,4,14,.76)); pointer-events:auto; }
+  #card { width:min(430px,92vw); text-align:center; padding:30px 24px; border:1px solid rgba(132,178,255,.25); border-radius:22px; background:rgba(7,10,28,.84); box-shadow:0 0 55px rgba(0,202,255,.12); }
+  #title { margin:0 0 10px; font-size:clamp(42px,11vw,76px); line-height:.95; font-weight:1000; font-style:italic; letter-spacing:.04em; color:#ff3c63; text-shadow:0 0 12px #ff315c,0 0 34px rgba(255,49,92,.55); }
+  #subtitle { color:#b9c3df; margin:14px 0 24px; font-size:14px; line-height:1.5; }
+  button { border:0; border-radius:12px; padding:14px 35px; color:#071019; background:linear-gradient(110deg,#55f0ff,#a1fbff); font:900 16px system-ui,sans-serif; letter-spacing:.11em; box-shadow:0 0 24px rgba(0,212,255,.38); cursor:pointer; }
+  button:active { transform:scale(.97); }
+  #hint { position:absolute; bottom:18px; left:50%; transform:translateX(-50%); color:rgba(228,237,255,.7); font-size:12px; letter-spacing:.08em; white-space:nowrap; text-shadow:0 2px 6px #000; pointer-events:none; }
+  @media (orientation:portrait) { #hint { bottom:12px; } }
+</style>
 </head>
 <body>
-  <main id="app">
-    <canvas id="game-canvas" aria-label="Web Rider game"></canvas>
-    <div id="ui-root" aria-live="polite"></div>
-    <div id="rotate-overlay" role="status">
-      <div class="rotate-card">
-        <span class="rotate-icon">↻</span>
-        <strong>Rotate your device</strong>
-        <span>Web Rider plays best in landscape</span>
-      </div>
+<canvas id="game"></canvas>
+<div id="hud">
+  <div id="brand">WEB RIDER</div>
+  <div id="score">0<small>METRES</small></div>
+  <div id="gems">◆ <span>0</span></div>
+  <div id="message"></div>
+  <div id="hint">HOLD TO ACCELERATE &amp; ROTATE IN THE AIR</div>
+  <div id="panel">
+    <div id="card">
+      <h1 id="title">WEB<br>RIDER</h1>
+      <div id="subtitle">Ride the neon line. Grab gems. Land clean.<br>Hold to accelerate and rotate in the air.</div>
+      <button id="play">RIDE</button>
     </div>
-  </main>
+  </div>
+</div>
+<script>
+(() => {
+  'use strict';
 
-  <!-- Keep this order: the existing modules expose browser globals. -->
-  <script src="./js/config.js"></script>
-  <script src="./js/planck.min.js"></script>
-  <script src="./js/physics.js"></script>
-  <script src="./js/vehicle.js"></script>
-  <script src="./js/track-pieces.js"></script>
-  <script src="./js/track.js"></script>
-  <script src="./js/camera.js"></script>
-  <script src="./js/particles.js"></script>
-  <script src="./js/renderer.js"></script>
-  <script src="./js/audio.js"></script>
-  <script src="./js/input.js"></script>
-  <script src="./js/storage.js"></script>
-  <script src="./js/stunts.js"></script>
-  <script src="./js/challenges.js"></script>
-  <script src="./js/levels.js"></script>
-  <script src="./js/ui.js"></script>
-  <script src="./js/game.js"></script>
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+  const panel = document.getElementById('panel');
+  const title = document.getElementById('title');
+  const subtitle = document.getElementById('subtitle');
+  const playButton = document.getElementById('play');
+  const scoreEl = document.getElementById('score');
+  const gemsEl = document.querySelector('#gems span');
+  const messageEl = document.getElementById('message');
+
+  const TAU = Math.PI * 2;
+  const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
+  let W=0,H=0,DPR=1,scale=40;
+  let running=false, crashed=false, held=false, last=0, elapsed=0;
+  let cameraX=0,cameraY=0,score=0,gems=0,combo=0,airTime=0,flipAngle=0;
+  let bike={x:0,y:0,vx:0,vy:0,a:0,va:0,grounded:true};
+  let toastTime=0,toastText='',lastGem=-100;
+
+  const colors=['#ff345c','#00dfff','#bd62ff','#ffe15b','#36ffb3'];
+  const stars=Array.from({length:100},(_,i)=>({x:(i*173.3)%1200,y:(i*83.7)%600,r:.5+(i%4)*.35,a:.25+(i%6)*.1}));
+
+  function resize(){
+    W=innerWidth; H=innerHeight; DPR=Math.min(devicePixelRatio||1,2);
+    canvas.width=Math.round(W*DPR); canvas.height=Math.round(H*DPR);
+    scale=clamp(Math.min(W/19,H/10),27,60);
+  }
+  addEventListener('resize',resize,{passive:true});
+  resize();
+
+  // Smooth, repeatable road profile: low rollers, launch hills, and broad gaps.
+  function ground(x){
+    const section=Math.floor(x/58), u=(x-section*58)/58;
+    const type=section%9;
+    let y=1.55 + .12*Math.sin(x*.12)+.055*Math.sin(x*.31);
+    if(type===2) y+=1.55*Math.pow(Math.sin(Math.PI*u),2);
+    if(type===4) y+=2.0*Math.pow(Math.sin(Math.PI*u),2);
+    if(type===6) y+=1.05*Math.pow(Math.sin(Math.PI*u),2);
+    if(type===7) y+=.32*Math.sin(Math.PI*u);
+    return y;
+  }
+  function inGap(x){
+    const s=Math.floor(x/58), u=(x-s*58)/58;
+    return (s%9===3 && u>.40 && u<.69) ||
+           (s%9===5 && u>.48 && u<.72) ||
+           (s%9===8 && u>.44 && u<.68);
+  }
+  function slope(x){ return (ground(x+.06)-ground(x-.06))/.12; }
+
+  function reset(){
+    bike={x:2,y:ground(2)+1.08,vx:0,vy:0,a:0,va:0,grounded:true};
+    cameraX=0;cameraY=ground(2);score=0;gems=0;combo=0;airTime=0;flipAngle=0;
+    elapsed=0;crashed=false;toastTime=0;lastGem=-100;
+    scoreEl.innerHTML='0<small>METRES</small>';gemsEl.textContent='0';
+  }
+
+  function start(){
+    reset();running=true;panel.style.display='none';last=performance.now();
+    requestAnimationFrame(frame);
+  }
+  playButton.addEventListener('click',start);
+  panel.addEventListener('pointerdown',e=>{if(e.target===panel && crashed) start();});
+  canvas.addEventListener('pointerdown',e=>{held=true;canvas.setPointerCapture?.(e.pointerId);});
+  canvas.addEventListener('pointerup',()=>held=false);
+  canvas.addEventListener('pointercancel',()=>held=false);
+  addEventListener('keydown',e=>{if(e.code==='Space'||e.code==='ArrowRight'){held=true;e.preventDefault();} if(e.code==='Enter'&&!running)start();});
+  addEventListener('keyup',e=>{if(e.code==='Space'||e.code==='ArrowRight')held=false;});
+  addEventListener('blur',()=>held=false);
+
+  function showToast(text){
+    toastText=text;toastTime=1.15;messageEl.textContent=text;messageEl.style.opacity='1';
+  }
+  function fail(){
+    if(crashed)return;
+    crashed=true;running=false;held=false;
+    const metres=Math.max(0,Math.floor(bike.x));
+    title.textContent='WIPEOUT!';
+    subtitle.innerHTML=`${Math.floor(score).toLocaleString()} points<br>${metres} metres &nbsp; · &nbsp; ${gems} gems`;
+    playButton.textContent='RIDE AGAIN';
+    panel.style.display='flex';
+  }
+
+  function update(dt){
+    elapsed+=dt;
+    const oldGrounded=bike.grounded;
+    const floor=ground(bike.x);
+    const onRoad=!inGap(bike.x);
+
+    if(held){
+      bike.vx+=8.4*dt;
+      if(!bike.grounded) bike.va-=5.3*dt;
+    } else if(!bike.grounded){
+      bike.va*=Math.exp(-1.1*dt);
+    }
+    bike.vx=clamp(bike.vx,3,25);
+    bike.vx*=Math.exp(-.055*dt);
+    bike.x+=bike.vx*dt;
+
+    const nextFloor=ground(bike.x);
+    const wheelY=bike.y-.87;
+    const contact=onRoad && wheelY<=floor+.04 && bike.vy<=2.2;
+    bike.grounded=false;
+
+    if(contact){
+      if(!oldGrounded){
+        const impact=Math.abs(bike.vy);
+        const angleError=Math.abs(Math.atan2(Math.sin(bike.a-Math.atan(slope(bike.x))),Math.cos(bike.a-Math.atan(slope(bike.x)))));
+        if((impact>10 && angleError>.78)||(impact>17)||angleError>1.38){fail();return;}
+        if(airTime>.22){
+          const rotations=Math.floor(Math.abs(flipAngle)/TAU);
+          if(rotations>0){score+=rotations*180;showToast(rotations===1?'+180 CLEAN FLIP!':`+${rotations*180} FLIP COMBO!`);combo+=rotations;}
+          else if(impact<5 && angleError<.2){score+=100;showToast('+100 SMOOTH LANDING!');}
+        }
+      }
+      bike.y=nextFloor+.87;
+      bike.vy=0;
+      bike.grounded=true;
+      bike.a+=(Math.atan(slope(bike.x))-bike.a)*Math.min(1,dt*10);
+      bike.va=0;
+      airTime=0;flipAngle=0;
+    }else{
+      bike.vy-=19.5*dt;
+      bike.y+=bike.vy*dt;
+      bike.a+=bike.va*dt;
+      airTime+=dt;flipAngle+=bike.va*dt;
+    }
+    if(bike.y < -5 || bike.x>0 && bike.vx<.8){fail();return;}
+
+    // Pickups follow the road and appear in arcs above jumps.
+    const step=Math.floor(bike.x*1.05);
+    if(step>lastGem){
+      lastGem=step;
+      const gx=step/1.05;
+      const gap=inGap(gx);
+      const arc=gap ? Math.sin((gx%58)/58*Math.PI)*1.35 : .24*Math.sin(gx*.45);
+      const gy=ground(gx)+1.45+arc;
+      if(Math.abs(bike.x-gx)<.53 && Math.abs(bike.y-.05-gy)<1.0){
+        gems++;score+=50;gemsEl.textContent=String(gems);showToast('+50 ◆');
+      }
+    }
+
+    score+=bike.vx*dt*1.6;
+    scoreEl.innerHTML=`${Math.floor(score).toLocaleString()}<small>METRES ${Math.floor(bike.x)}m</small>`;
+
+    cameraX+=(bike.x-cameraX-(W/scale)*.31)*Math.min(1,dt*4.2);
+    cameraY+=(bike.y-cameraY-(H/scale)*.52)*Math.min(1,dt*2.3);
+    if(toastTime>0){toastTime-=dt;if(toastTime<=0)messageEl.style.opacity='0';}
+  }
+
+  function sx(x){return (x-cameraX)*scale+W*.31;}
+  function sy(y){return H*.52-(y-cameraY)*scale;}
+
+  function drawSky(){
+    const grad=ctx.createLinearGradient(0,0,0,H);
+    grad.addColorStop(0,'#070a19');grad.addColorStop(.58,'#121c43');grad.addColorStop(1,'#21113a');
+    ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+    for(const st of stars){
+      const x=((st.x*scale*.018-cameraX*scale*.035)%(W+30)+W+30)%(W+30);
+      ctx.globalAlpha=st.a;ctx.fillStyle='#fff';ctx.fillRect(x,st.y/600*H,st.r,st.r);
+    }
+    ctx.globalAlpha=1;
+    // Layered city silhouettes.
+    for(let layer=0;layer<2;layer++){
+      const par=layer?.13:.055, base=H*(layer?.83:.73), step=layer?42:64;
+      const offset=((cameraX*scale*par)%step+step)%step;
+      for(let i=-2;i<W/step+3;i++){
+        const seed=(i+Math.floor(cameraX*par*scale/step)+10000);
+        const bw=step*(.65+((seed*17)%31)/100);
+        const bh=(.12+((seed*43)%100)/250)*(layer?H*.42:H*.34);
+        const x=i*step-offset;
+        ctx.fillStyle=layer?'#111a3a':'#0c1430';
+        ctx.fillRect(x,base-bh,bw,bh);
+        if(layer){
+          ctx.fillStyle='rgba(255,207,100,.38)';
+          for(let wy=base-bh+12;wy<base-5;wy+=15)for(let wx=x+7;wx<x+bw-5;wx+=11)
+            if(((Math.floor(wx+wy+seed))%5)===0)ctx.fillRect(wx,wy,3,5);
+        }
+      }
+    }
+  }
+
+  function drawRoad(){
+    const left=Math.max(0,cameraX-3),right=cameraX+W/scale+4;
+    const step=.55;
+    ctx.beginPath();
+    let started=false;
+    for(let x=left;x<=right;x+=step){
+      if(inGap(x)){started=false;continue;}
+      const px=sx(x),py=sy(ground(x));
+      if(!started){ctx.moveTo(px,py);started=true;}else ctx.lineTo(px,py);
+    }
+    ctx.lineCap='round';ctx.lineJoin='round';
+    ctx.strokeStyle='rgba(0,218,255,.2)';ctx.lineWidth=18;ctx.stroke();
+    ctx.strokeStyle='#00dfff';ctx.lineWidth=6;ctx.stroke();
+    ctx.strokeStyle='#d8fbff';ctx.lineWidth=1.5;ctx.stroke();
+
+    // Dark ground fill, separately beneath each road run.
+    ctx.fillStyle='#090e27';
+    let active=false;
+    for(let x=left;x<=right;x+=step){
+      if(inGap(x)){if(active){ctx.lineTo(sx(x-step),H+10);ctx.lineTo(sx(left),H+10);ctx.closePath();ctx.fill();active=false;}continue;}
+      if(!active){ctx.beginPath();ctx.moveTo(sx(x),sy(ground(x)));active=true;}
+      else ctx.lineTo(sx(x),sy(ground(x)));
+    }
+    if(active){ctx.lineTo(sx(right),H+10);ctx.lineTo(sx(left),H+10);ctx.closePath();ctx.fill();}
+  }
+
+  function drawGems(){
+    const start=Math.floor((cameraX-2)*1.05),end=Math.floor((cameraX+W/scale+3)*1.05);
+    for(let i=start;i<=end;i++){
+      const x=i/1.05;
+      if(x<0||Math.abs(x-bike.x)<.7)continue;
+      const gap=inGap(x),arc=gap?Math.sin((x%58)/58*Math.PI)*1.35:.24*Math.sin(x*.45);
+      const y=ground(x)+1.45+arc;
+      const X=sx(x),Y=sy(y),r=scale*.20;
+      ctx.save();ctx.translate(X,Y);ctx.rotate(Math.PI/4);
+      ctx.shadowColor='#bf55ff';ctx.shadowBlur=15;
+      ctx.fillStyle='#c06cff';ctx.fillRect(-r,-r,r*2,r*2);
+      ctx.shadowBlur=0;ctx.strokeStyle='#f5d9ff';ctx.lineWidth=1.5;ctx.strokeRect(-r,-r,r*2,r*2);
+      ctx.restore();
+    }
+  }
+
+  function drawBike(){
+    const x=sx(bike.x),y=sy(bike.y),s=scale;
+    const a=bike.a;
+    ctx.save();ctx.translate(x,y);ctx.rotate(-a);
+    const rear=-.66*s,front=.66*s,wY=.22*s,r=.34*s;
+    // Wheels, hubs and spokes.
+    for(const wx of [rear,front]){
+      ctx.fillStyle='#080a12';ctx.beginPath();ctx.arc(wx,wY,r,0,TAU);ctx.fill();
+      ctx.strokeStyle='#dae6fb';ctx.lineWidth=Math.max(2,s*.055);ctx.stroke();
+      ctx.strokeStyle='#ff4268';ctx.lineWidth=Math.max(2,s*.055);
+      ctx.beginPath();ctx.arc(wx,wY,r*.78,-.5,1.9);ctx.stroke();
+      ctx.strokeStyle='rgba(210,230,255,.75)';ctx.lineWidth=1;
+      for(let j=0;j<6;j++){const q=j*TAU/6;ctx.beginPath();ctx.moveTo(wx+Math.cos(q)*r*.16,wY+Math.sin(q)*r*.16);ctx.lineTo(wx+Math.cos(q)*r*.72,wY+Math.sin(q)*r*.72);ctx.stroke();}
+    }
+    // Frame and fork.
+    ctx.lineCap='round';ctx.lineJoin='round';
+    ctx.strokeStyle='#e7efff';ctx.lineWidth=Math.max(3,s*.075);
+    ctx.beginPath();ctx.moveTo(rear,wY);ctx.lineTo(-.18*s,-.12*s);ctx.lineTo(.30*s,-.1*s);ctx.lineTo(front,wY);ctx.moveTo(-.18*s,-.12*s);ctx.lineTo(.18*s,.18*s);ctx.lineTo(.30*s,-.1*s);ctx.stroke();
+    ctx.strokeStyle='#ff345c';ctx.lineWidth=Math.max(4,s*.11);
+    ctx.beginPath();ctx.moveTo(-.42*s,-.20*s);ctx.lineTo(-.10*s,-.27*s);ctx.lineTo(.25*s,-.22*s);ctx.lineTo(.38*s,-.1*s);ctx.stroke();
+    // Rider legs, torso, arms.
+    ctx.strokeStyle='#2470ff';ctx.lineWidth=Math.max(5,s*.14);
+    ctx.beginPath();ctx.moveTo(-.18*s,-.30*s);ctx.lineTo(.03*s,-.02*s);ctx.lineTo(.28*s,.04*s);ctx.moveTo(-.16*s,-.28*s);ctx.lineTo(-.42*s,-.05*s);ctx.lineTo(-.52*s,-.10*s);ctx.stroke();
+    ctx.strokeStyle='#ff294e';ctx.lineWidth=Math.max(7,s*.19);
+    ctx.beginPath();ctx.moveTo(-.20*s,-.37*s);ctx.lineTo(-.12*s,-.76*s);ctx.lineTo(.16*s,-.64*s);ctx.lineTo(.43*s,-.39*s);ctx.stroke();
+    ctx.strokeStyle='#f5f7ff';ctx.lineWidth=Math.max(4,s*.09);
+    ctx.beginPath();ctx.moveTo(.08*s,-.65*s);ctx.lineTo(.39*s,-.45*s);ctx.lineTo(.53*s,-.32*s);ctx.stroke();
+    // Helmet and visor.
+    ctx.fillStyle='#f3294e';ctx.beginPath();ctx.arc(-.12*s,-.91*s,.19*s,0,TAU);ctx.fill();
+    ctx.fillStyle='#e9fbff';ctx.beginPath();ctx.ellipse(-.01*s,-.94*s,.12*s,.055*s,-.12,0,TAU);ctx.fill();
+    ctx.restore();
+  }
+
+  function draw(){
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    drawSky();drawRoad();drawGems();
+    // Distance markers along the track.
+    const first=Math.ceil(cameraX/100)*100;
+    ctx.font='700 11px system-ui';ctx.textAlign='center';ctx.fillStyle='rgba(205,220,255,.45)';
+    for(let x=first;x<cameraX+W/scale;x+=100){ctx.fillText(`${x}m`,sx(x),sy(ground(x)) + 27);}
+    drawBike();
+    if(running&&!bike.grounded){
+      ctx.fillStyle='rgba(190,210,255,.7)';ctx.font='700 11px system-ui';ctx.textAlign='center';
+      ctx.fillText(`${Math.floor(Math.abs(flipAngle)/TAU)} FLIP${Math.floor(Math.abs(flipAngle)/TAU)===1?'':'S'}`,sx(bike.x),sy(bike.y)-scale*1.35);
+    }
+  }
+
+  function frame(now){
+    if(!running)return;
+    const dt=Math.min(.033,(now-last)/1000||0);last=now;
+    update(dt);draw();
+    if(running)requestAnimationFrame(frame);
+  }
+
+  reset();draw();
+})();
+</script>
 </body>
 </html>
