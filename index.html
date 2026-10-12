@@ -15,46 +15,6 @@
   <title>Web Rider</title>
 </head>
 <body>
-  <script>
-  /* Boot diagnostics: prints errors and boot state directly on screen. */
-  (function () {
-    function box() {
-      var b = document.getElementById('boot-errors');
-      if (!b && document.body) {
-        b = document.createElement('div');
-        b.id = 'boot-errors';
-        b.style.cssText = 'position:fixed;left:8px;right:8px;bottom:8px;z-index:9999;' +
-          'background:rgba(40,0,10,.95);color:#ffb3c0;font:12px/1.4 monospace;padding:10px;' +
-          'border:1px solid #ff304f;white-space:pre-wrap;max-height:50vh;overflow:auto;pointer-events:auto;';
-        document.body.appendChild(b);
-      }
-      return b;
-    }
-    function log(msg) { var b = box(); if (b) b.textContent += (b.textContent ? '\n\n' : '') + msg; }
-    window.addEventListener('error', function (e) {
-      if (e.target && (e.target.src || e.target.href)) {
-        log('FAILED TO LOAD: ' + (e.target.src || e.target.href));
-      } else {
-        log((e.message || 'Error') + (e.error && e.error.stack ? '\n' + e.error.stack : ''));
-      }
-    }, true);
-    window.addEventListener('unhandledrejection', function (e) {
-      log('PROMISE REJECTION: ' + (e.reason && e.reason.stack ? e.reason.stack : e.reason));
-    });
-    window.addEventListener('load', function () {
-      setTimeout(function () {
-        var r = document.getElementById('ui-root');
-        var t = r && r.querySelector ? r.querySelector('.screen-title') : null;
-        log('BOOT PROBE: UIManager=' + (typeof UIManager) +
-            ' CONFIG=' + (typeof CONFIG) +
-            ' LEVELS=' + (typeof LEVELS) +
-            ' uiRootChildren=' + (r ? r.children.length : 'NO #ui-root') +
-            ' titleClass=' + (t ? t.className : 'n/a') +
-            ' titleHtmlLen=' + (t ? t.innerHTML.length : 'n/a'));
-      }, 1500);
-    });
-  })();
-  </script>
   <main id="app">
     <canvas id="game-canvas" aria-label="Web Rider game"></canvas>
     <div id="ui-root" aria-live="polite"></div>
