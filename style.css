@@ -544,3 +544,17 @@ body {
     gap: 7px;
   }
 }
+/* ==== UI VISIBILITY OVERRIDE — defeats any rule hiding the menu ==== */
+html body #ui-root {
+  visibility: visible !important;
+  display: block !important;
+  opacity: 1 !important;
+  transform: none !important;
+  z-index: 2 !important;
+}
+html body .ui-screen.active {
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+}
