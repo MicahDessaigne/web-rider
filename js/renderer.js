@@ -4,7 +4,7 @@
     { name: 'Midnight Web',  bg: ['#050a24', '#101a4a'], edge: '#ff2d55', glow: '#ff5c7a', fill: '#0a0f2e', sky: ['#0d1640', '#16215a'], win: '#ffd36b' },
     { name: 'Blue Swing',    bg: ['#020818', '#0a2a5e'], edge: '#00d4ff', glow: '#59e6ff', fill: '#04112b', sky: ['#082048', '#0d2f66'], win: '#9be8ff' },
     { name: 'Crimson Dusk',  bg: ['#14020c', '#3d0a24'], edge: '#ff3b3b', glow: '#ff8080', fill: '#1a0510', sky: ['#2a0718', '#3f0d26'], win: '#ffb27a' },
-    { name: 'White Night',   bg: ['#070b1e', '#1b2450'], edge: '#ffffff', glow: '#bcd4ff', fill: '#0b1030', sky: ['#121a44', '#1c2760'], win: '#ffffff' },
+    { name: 'White Night',   bg: ['#070b1e', '#1b2450'], edge: '#ffff', glow: '#bcd4ff', fill: '#0b1030', sky: ['#121a44', '#1c2760'], win: '#ffff' },
     { name: 'Violet Rooftops', bg: ['#0c0420', '#2a0e55'], edge: '#c77dff', glow: '#e0b0ff', fill: '#12062a', sky: ['#1d0b40', '#2b1060'], win: '#ffcf70' },
     { name: 'Toxic Alley',   bg: ['#020f0a', '#08301f'], edge: '#39ff14', glow: '#8cff73', fill: '#03140d', sky: ['#062418', '#0a3322'], win: '#c8ff9e' },
     { name: 'Golden Hour',   bg: ['#120a02', '#3a2408'], edge: '#ffc93c', glow: '#ffe08a', fill: '#160d03', sky: ['#2a1a06', '#3d270a'], win: '#fff1b0' },
@@ -56,7 +56,7 @@
         const s = rnd() < 0.1 ? 2 : 1; g.fillRect(rnd() * w, rnd() * h * 0.7, s, s);
       }
       // faint spider-web in the corner
-      g.globalAlpha = 0.07; g.strokeStyle = '#ffffff'; g.lineWidth = 1;
+      g.globalAlpha = 0.07; g.strokeStyle = '#ffff'; g.lineWidth = 1;
       const cx = w * 0.92, cy = h * 0.05, R = Math.min(w, h) * 0.5;
       for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R); g.stroke(); }
       for (let r = R / 6; r <= R; r += R / 6) { g.beginPath(); for (let i = 0; i <= 12; i++) { const a = i / 12 * Math.PI * 2; const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r; i ? g.quadraticCurveTo(cx + Math.cos(a - Math.PI / 12) * r * 0.85, cy + Math.sin(a - Math.PI / 12) * r * 0.85, x, y) : g.moveTo(x, y); } g.stroke(); }
@@ -112,7 +112,7 @@
         ctx.globalAlpha = 0.4; ctx.lineWidth = Math.max(6, s * 0.32); ctx.stroke(path);
       }
       ctx.globalAlpha = 1; ctx.strokeStyle = T.edge; ctx.lineWidth = Math.max(3, s * 0.14); ctx.stroke(path);
-      ctx.strokeStyle = '#ffffff'; ctx.globalAlpha = 0.85; ctx.lineWidth = Math.max(1, s * 0.04); ctx.stroke(path);
+      ctx.strokeStyle = '#ffff'; ctx.globalAlpha = 0.85; ctx.lineWidth = Math.max(1, s * 0.04); ctx.stroke(path);
       ctx.globalAlpha = 1;
     }
 
@@ -179,7 +179,7 @@
           let cx = h.x, cy = h.y;
           if (h.type === 'pendulum') {
             const b = track.pendulumBob(h); cx = b.x; cy = b.y;
-            ctx.strokeStyle = '#ffffff'; ctx.globalAlpha = 0.8; ctx.lineWidth = Math.max(1, s * 0.05);
+            ctx.strokeStyle = '#ffff'; ctx.globalAlpha = 0.8; ctx.lineWidth = Math.max(1, s * 0.05);
             ctx.beginPath(); ctx.moveTo(cam.toScreenX(h.px), cam.toScreenY(h.py)); ctx.lineTo(cam.toScreenX(cx), cam.toScreenY(cy)); ctx.stroke();
             ctx.globalAlpha = 1;
           }
@@ -243,209 +243,181 @@
     }
 
     /** Bike + rider. state = interpolated {x,y,a, fx,fy,fa, rx,ry,ra}. */
- _drawBike(ctx, cam, st, skin, crashed) {
-  const s = cam.scale;
-  const C = root.CONFIG;
+    _drawBike(ctx, cam, st, skin, crashed) {
+      const s = cam.scale;
+      const C = root.CONFIG;
 
-  const wheel = (x, y, a) => {
-    const sx = cam.toScreenX(x);
-    const sy = cam.toScreenY(y);
-    const r = C.WHEEL_RADIUS * s;
+      const wheel = (x, y, a) => {
+        const sx = cam.toScreenX(x);
+        const sy = cam.toScreenY(y);
+        const r = C.WHEEL_RADIUS * s;
 
-    ctx.save();
-    ctx.translate(sx, sy);
-    ctx.rotate(-a);
+        ctx.save();
+        ctx.translate(sx, sy);
+        ctx.rotate(-a);
 
-    ctx.fillStyle = '#080a12';
-    ctx.beginPath();
-    ctx.arc(0, 0, r, 0, Math.PI * 2);
-    ctx.fill();
+        ctx.fillStyle = '#080a12';
+        ctx.beginPath();
+        ctx.arc(0, 0, r, 0, Math.PI * 2);
+        ctx.fill();
 
-    ctx.strokeStyle = '#c8d3e8';
-    ctx.lineWidth = Math.max(1.5, r * 0.12);
-    ctx.beginPath();
-    ctx.arc(0, 0, r * 0.78, 0, Math.PI * 2);
-    ctx.stroke();
+        ctx.strokeStyle = '#c8d3e8';
+        ctx.lineWidth = Math.max(1.5, r * 0.12);
+        ctx.beginPath();
+        ctx.arc(0, 0, r * 0.78, 0, Math.PI * 2);
+        ctx.stroke();
 
-    ctx.strokeStyle = skin.accent || '#ffffff';
-    ctx.lineWidth = Math.max(2, r * 0.24);
-    ctx.beginPath();
-    ctx.arc(0, 0, r * 0.88, -0.45, 1.75);
-    ctx.stroke();
+        ctx.strokeStyle = skin.accent || '#ffff';
+        ctx.lineWidth = Math.max(2, r * 0.24);
+        ctx.beginPath();
+        ctx.arc(0, 0, r * 0.88, -0.45, 1.75);
+        ctx.stroke();
 
-    ctx.strokeStyle = 'rgba(220,235,255,0.75)';
-    ctx.lineWidth = Math.max(1, r * 0.055);
-    for (let i = 0; i < 6; i++) {
-      const a0 = i * Math.PI / 3;
-      ctx.beginPath();
-      ctx.moveTo(Math.cos(a0) * r * 0.18, Math.sin(a0) * r * 0.18);
-      ctx.lineTo(Math.cos(a0) * r * 0.72, Math.sin(a0) * r * 0.72);
-      ctx.stroke();
-    }
+        ctx.strokeStyle = 'rgba(220,235,255,0.75)';
+        ctx.lineWidth = Math.max(1, r * 0.055);
+        for (let i = 0; i < 6; i++) {
+          const a0 = i * Math.PI / 3;
+          ctx.beginPath();
+          ctx.moveTo(Math.cos(a0) * r * 0.18, Math.sin(a0) * r * 0.18);
+          ctx.lineTo(Math.cos(a0) * r * 0.72, Math.sin(a0) * r * 0.72);
+          ctx.stroke();
+        }
 
-    ctx.restore();
-  };
+        ctx.restore();
+      };
 
-  wheel(st.rx, st.ry, st.ra);
-  wheel(st.fx, st.fy, st.fa);
+      wheel(st.rx, st.ry, st.ra);
+      wheel(st.fx, st.fy, st.fa);
 
-  if (crashed) return;
-
-  ctx.save();
-  ctx.translate(cam.toScreenX(st.x), cam.toScreenY(st.y));
-  ctx.rotate(-st.a);
-  ctx.scale(s, -s);
-
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-
-  const rearX = C.REAR_WHEEL_X;
-  const frontX = C.FRONT_WHEEL_X;
-  const wheelY = C.WHEEL_Y_OFFSET;
-
-  // Motorcycle frame and fork: a narrow triangular frame between the wheels.
-  ctx.strokeStyle = '#151827';
-  ctx.lineWidth = 0.13;
-  ctx.beginPath();
-  ctx.moveTo(rearX, wheelY);
-  ctx.lineTo(-0.24, 0.12);
-  ctx.lineTo(0.30, 0.12);
-  ctx.lineTo(frontX, wheelY);
-  ctx.moveTo(-0.24, 0.12);
-  ctx.lineTo(0.02, -0.12);
-  ctx.lineTo(0.30, 0.12);
-  ctx.stroke();
-
-  ctx.strokeStyle = skin.body;
-  ctx.lineWidth = 0.07;
-  ctx.beginPath();
-  ctx.moveTo(rearX, wheelY);
-  ctx.lineTo(-0.24, 0.12);
-  ctx.lineTo(0.30, 0.12);
-  ctx.lineTo(frontX, wheelY);
-  ctx.stroke();
-
-  // Engine block.
-  ctx.fillStyle = '#171a29';
-  ctx.strokeStyle = skin.accent || '#ffffff';
-  ctx.lineWidth = 0.035;
-  ctx.beginPath();
-  ctx.moveTo(-0.18, 0.08);
-  ctx.lineTo(0.20, 0.08);
-  ctx.lineTo(0.26, -0.16);
-  ctx.lineTo(-0.12, -0.20);
-  ctx.closePath();
-  ctx.fill();
-  ctx.stroke();
-
-  // Seat and compact fuel tank, avoiding a broad car-like body shape.
-  ctx.fillStyle = skin.body;
-  ctx.beginPath();
-  ctx.moveTo(-0.53, 0.23);
-  ctx.lineTo(-0.12, 0.27);
-  ctx.lineTo(0.27, 0.24);
-  ctx.lineTo(0.43, 0.13);
-  ctx.lineTo(0.13, 0.08);
-  ctx.lineTo(-0.30, 0.10);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.strokeStyle = skin.accent || '#ffffff';
-  ctx.lineWidth = 0.035;
-  ctx.stroke();
-
-  // Rear suspension.
-  ctx.strokeStyle = '#d7e4fa';
-  ctx.lineWidth = 0.045;
-  ctx.beginPath();
-  ctx.moveTo(rearX + 0.05, wheelY + 0.03);
-  ctx.lineTo(-0.24, 0.12);
-  ctx.stroke();
-
-  // Front fork and handlebar.
-  ctx.strokeStyle = '#e6efff';
-  ctx.lineWidth = 0.055;
-  ctx.beginPath();
-  ctx.moveTo(0.30, 0.14);
-  ctx.lineTo(frontX, wheelY);
-  ctx.moveTo(0.27, 0.37);
-  ctx.lineTo(0.48, 0.39);
-  ctx.stroke();
-
-  // Rider: bent legs, crouched torso and arms reaching the bars.
-  ctx.strokeStyle = skin.suit2 || '#2458ff';
-  ctx.lineWidth = 0.14;
-  ctx.beginPath();
-  ctx.moveTo(-0.28, 0.25);
-  ctx.lineTo(-0.05, 0.00);
-  ctx.lineTo(0.20, -0.02);
-  ctx.moveTo(-0.25, 0.22);
-  ctx.lineTo(-0.48, 0.02);
-  ctx.lineTo(-0.62, 0.00);
-  ctx.stroke();
-
-  ctx.strokeStyle = skin.suit || '#d0102a';
-  ctx.lineWidth = 0.20;
-  ctx.beginPath();
-  ctx.moveTo(-0.30, 0.32);
-  ctx.lineTo(-0.15, 0.62);
-  ctx.lineTo(0.12, 0.54);
-  ctx.lineTo(0.39, 0.40);
-  ctx.stroke();
-
-  // Gloved hand on the handlebar.
-  ctx.fillStyle = skin.accent || '#ffffff';
-  ctx.beginPath();
-  ctx.arc(0.47, 0.39, 0.065, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Helmet and bright eye lenses.
-  const hx = C.HEAD_OFFSET_X;
-  const hy = C.HEAD_OFFSET_Y;
-  const hr = C.HEAD_RADIUS * 1.12;
-
-  ctx.fillStyle = skin.suit || '#d0102a';
-  ctx.strokeStyle = '#11131e';
-  ctx.lineWidth = 0.035;
-  ctx.beginPath();
-  ctx.arc(hx, hy, hr, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.stroke();
-
-  ctx.fillStyle = '#f7fbff';
-  ctx.beginPath();
-  ctx.ellipse(hx + 0.10, hy + 0.015, 0.075, 0.045, 0.18, 0, Math.PI * 2);
-  ctx.ellipse(hx + 0.22, hy - 0.015, 0.055, 0.035, 0.18, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.restore();
-}
-      wheel(st.rx, st.ry, st.ra); wheel(st.fx, st.fy, st.fa);
       if (crashed) return;
+
       ctx.save();
-      ctx.translate(cam.toScreenX(st.x), cam.toScreenY(st.y)); ctx.rotate(-st.a); ctx.scale(s, -s); // local meters, y up
-      ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-      // frame
-      ctx.fillStyle = skin.body; ctx.strokeStyle = skin.accent; ctx.lineWidth = 0.05;
-      ctx.beginPath(); ctx.moveTo(-0.95, -0.05); ctx.lineTo(-0.5, 0.22); ctx.lineTo(0.35, 0.25); ctx.lineTo(0.95, 0.05); ctx.lineTo(0.55, -0.18); ctx.lineTo(-0.6, -0.2); ctx.closePath(); ctx.fill(); ctx.stroke();
-      ctx.strokeStyle = skin.body; ctx.lineWidth = 0.09;
-      ctx.beginPath(); ctx.moveTo(0.55, 0.15); ctx.lineTo(C.FRONT_WHEEL_X, C.WHEEL_Y_OFFSET); ctx.moveTo(-0.5, -0.05); ctx.lineTo(C.REAR_WHEEL_X, C.WHEEL_Y_OFFSET); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(0.5, 0.25); ctx.lineTo(0.62, 0.55); ctx.stroke(); // handlebar
-      // rider body
-      ctx.strokeStyle = skin.suit2; ctx.lineWidth = 0.17;
-      ctx.beginPath(); ctx.moveTo(-0.25, 0.3); ctx.lineTo(0.1, 0.05); ctx.lineTo(0.25, -0.05); ctx.stroke(); // leg
-      ctx.strokeStyle = skin.suit; ctx.lineWidth = 0.24;
-      ctx.beginPath(); ctx.moveTo(-0.3, 0.3); ctx.lineTo(-0.1, 0.68); ctx.stroke(); // torso
-      ctx.lineWidth = 0.11; ctx.beginPath(); ctx.moveTo(-0.12, 0.62); ctx.lineTo(0.25, 0.5); ctx.lineTo(0.6, 0.55); ctx.stroke(); // arm
-      // helmet / mask
-      const hx = C.HEAD_OFFSET_X, hy = C.HEAD_OFFSET_Y, hr = C.HEAD_RADIUS * 1.15;
-      ctx.fillStyle = '#e8102e'; ctx.beginPath(); ctx.arc(hx, hy, hr, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = 'rgba(0,0,0,0.55)'; ctx.lineWidth = 0.012;
-      ctx.beginPath(); for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; ctx.moveTo(hx + 0.07, hy); ctx.lineTo(hx + Math.cos(a) * hr, hy + Math.sin(a) * hr); }
-      ctx.moveTo(hx + hr * 0.55, hy); ctx.arc(hx + 0.07, hy, hr * 0.5, 0, Math.PI * 2); ctx.stroke();
-      ctx.fillStyle = '#ffffff'; ctx.strokeStyle = '#000'; ctx.lineWidth = 0.02;
-      ctx.beginPath(); ctx.ellipse(hx + 0.14, hy + 0.04, 0.075, 0.045, 0.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-      ctx.beginPath(); ctx.ellipse(hx + 0.2, hy - 0.01, 0.05, 0.035, 0.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.translate(cam.toScreenX(st.x), cam.toScreenY(st.y));
+      ctx.rotate(-st.a);
+      ctx.scale(s, -s);
+
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      const rearX = C.REAR_WHEEL_X;
+      const frontX = C.FRONT_WHEEL_X;
+      const wheelY = C.WHEEL_Y_OFFSET;
+
+      // Motorcycle frame and fork: a narrow triangular frame between the wheels.
+      ctx.strokeStyle = '#151827';
+      ctx.lineWidth = 0.13;
+      ctx.beginPath();
+      ctx.moveTo(rearX, wheelY);
+      ctx.lineTo(-0.24, 0.12);
+      ctx.lineTo(0.30, 0.12);
+      ctx.lineTo(frontX, wheelY);
+      ctx.moveTo(-0.24, 0.12);
+      ctx.lineTo(0.02, -0.12);
+      ctx.lineTo(0.30, 0.12);
+      ctx.stroke();
+
+      ctx.strokeStyle = skin.body;
+      ctx.lineWidth = 0.07;
+      ctx.beginPath();
+      ctx.moveTo(rearX, wheelY);
+      ctx.lineTo(-0.24, 0.12);
+      ctx.lineTo(0.30, 0.12);
+      ctx.lineTo(frontX, wheelY);
+      ctx.stroke();
+
+      // Engine block.
+      ctx.fillStyle = '#171a29';
+      ctx.strokeStyle = skin.accent || '#ffff';
+      ctx.lineWidth = 0.035;
+      ctx.beginPath();
+      ctx.moveTo(-0.18, 0.08);
+      ctx.lineTo(0.20, 0.08);
+      ctx.lineTo(0.26, -0.16);
+      ctx.lineTo(-0.12, -0.20);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Seat and compact fuel tank, avoiding a broad car-like body shape.
+      ctx.fillStyle = skin.body;
+      ctx.beginPath();
+      ctx.moveTo(-0.53, 0.23);
+      ctx.lineTo(-0.12, 0.27);
+      ctx.lineTo(0.27, 0.24);
+      ctx.lineTo(0.43, 0.13);
+      ctx.lineTo(0.13, 0.08);
+      ctx.lineTo(-0.30, 0.10);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.strokeStyle = skin.accent || '#ffff';
+      ctx.lineWidth = 0.035;
+      ctx.stroke();
+
+      // Rear suspension.
+      ctx.strokeStyle = '#d7e4fa';
+      ctx.lineWidth = 0.045;
+      ctx.beginPath();
+      ctx.moveTo(rearX + 0.05, wheelY + 0.03);
+      ctx.lineTo(-0.24, 0.12);
+      ctx.stroke();
+
+      // Front fork and handlebar.
+      ctx.strokeStyle = '#e6efff';
+      ctx.lineWidth = 0.055;
+      ctx.beginPath();
+      ctx.moveTo(0.30, 0.14);
+      ctx.lineTo(frontX, wheelY);
+      ctx.moveTo(0.27, 0.37);
+      ctx.lineTo(0.48, 0.39);
+      ctx.stroke();
+
+      // Rider: bent legs, crouched torso and arms reaching the bars.
+      ctx.strokeStyle = skin.suit2 || '#2458ff';
+      ctx.lineWidth = 0.14;
+      ctx.beginPath();
+      ctx.moveTo(-0.28, 0.25);
+      ctx.lineTo(-0.05, 0.00);
+      ctx.lineTo(0.20, -0.02);
+      ctx.moveTo(-0.25, 0.22);
+      ctx.lineTo(-0.48, 0.02);
+      ctx.lineTo(-0.62, 0.00);
+      ctx.stroke();
+
+      ctx.strokeStyle = skin.suit || '#d0102a';
+      ctx.lineWidth = 0.20;
+      ctx.beginPath();
+      ctx.moveTo(-0.30, 0.32);
+      ctx.lineTo(-0.15, 0.62);
+      ctx.lineTo(0.12, 0.54);
+      ctx.lineTo(0.39, 0.40);
+      ctx.stroke();
+
+      // Gloved hand on the handlebar.
+      ctx.fillStyle = skin.accent || '#ffff';
+      ctx.beginPath();
+      ctx.arc(0.47, 0.39, 0.065, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Helmet and bright eye lenses.
+      const hx = C.HEAD_OFFSET_X;
+      const hy = C.HEAD_OFFSET_Y;
+      const hr = C.HEAD_RADIUS * 1.12;
+
+      ctx.fillStyle = skin.suit || '#d0102a';
+      ctx.strokeStyle = '#11131e';
+      ctx.lineWidth = 0.035;
+      ctx.beginPath();
+      ctx.arc(hx, hy, hr, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#f7fbff';
+      ctx.beginPath();
+      ctx.ellipse(hx + 0.10, hy + 0.015, 0.075, 0.045, 0.18, 0, Math.PI * 2);
+      ctx.ellipse(hx + 0.22, hy - 0.015, 0.055, 0.035, 0.18, 0, Math.PI * 2);
+      ctx.fill();
+
       ctx.restore();
     }
 
@@ -490,7 +462,7 @@
       // speed lines
       if (this.quality > 0 && scene.speed > 22) {
         const k = Math.min(1, (scene.speed - 22) / 8);
-        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5;
+        ctx.strokeStyle = '#ffff'; ctx.lineWidth = 1.5;
         for (let i = 0; i < 10; i++) {
           const y = ((i * 97 + this.time * 37) % 1) * this.h, x = ((i * 389 - this.time * 2600) % this.w + this.w) % this.w;
           ctx.globalAlpha = 0.15 * k; ctx.beginPath(); ctx.moveTo(x, (i * 71) % this.h); ctx.lineTo(x + 120 * k, (i * 71) % this.h); ctx.stroke(); void y;
