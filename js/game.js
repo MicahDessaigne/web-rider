@@ -1,7 +1,16 @@
 /* Main game loop and connections between the existing game modules. */
 (function (root) {
   'use strict';
-
+const RIDER_STYLE_PIECES = [
+  0, 1, 2, 3, 4, 5, 6, 8,          // flats, gentle terrain, bumps
+  10, 11, 12, 16, 18, 20,          // ramps and kickers
+  22, 23, 24, 26, 27, 28, 31,      // jumps and gem trails
+  32, 33, 34,                       // drops
+  40, 41, 42, 43, 44,               // loops and loop combinations
+  48, 49, 50, 51, 52, 53, 54, 55,  // flowing curves and waves
+  67, 68, 69, 70, 81,               // a limited set of hazards and boosts
+  90, 91, 92, 93, 94, 95, 97, 98, 99 // gem patterns
+];
   class Game {
     constructor() {
       this.canvas = document.getElementById('game-canvas');
