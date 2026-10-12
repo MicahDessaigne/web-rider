@@ -129,6 +129,14 @@ const RIDER_STYLE_PIECES = [
       const spawnY = root.CONFIG.WHEEL_RADIUS -
         root.CONFIG.WHEEL_Y_OFFSET + 0.05;
       this.vehicle = new root.Vehicle(this.physics, 2, spawnY, this.track);
+      const selectedVehicle =
+  root.CONFIG.VEHICLES[this.storage.get('activeVehicle')] ||
+  root.CONFIG.VEHICLES[0];
+
+this.vehicle.stats = {
+  torque: selectedVehicle.torque || 1,
+  spin: selectedVehicle.spin || 1
+};
       this.runStartX = this.vehicle.getPosition().x;
 
       this.stunts = new root.StuntSystem(this.audio);
