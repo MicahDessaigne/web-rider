@@ -115,11 +115,14 @@ const RIDER_STYLE_PIECES = [
 
       const level = this.currentLevel;
       this.track = new root.Track(this.physics, {
-        seed: this.currentSeed,
-        length: level ? level.length : 0,
-        minDifficulty: level ? Math.max(1, level.difficulty - 1) : 1,
-        maxDifficulty: level ? level.difficulty : 10,
-        startFlat: 60
+        {
+  seed: this.currentSeed,
+  length: level ? level.length : 0,
+  minDifficulty: level ? Math.max(1, level.difficulty - 1) : 1,
+  maxDifficulty: level ? level.difficulty : 10,
+  pool: RIDER_STYLE_PIECES,
+  startFlat: 22
+}
       });
       this.track.initStart();
 
