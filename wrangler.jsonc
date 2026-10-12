@@ -1,0 +1,10 @@
+{
+  "name": "web-rider",
+  "compatibility_date": "2026-10-06",
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "directory": "."
+  }
+}
